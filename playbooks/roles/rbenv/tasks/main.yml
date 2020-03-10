@@ -13,13 +13,13 @@
 #   - role: rbenv
 #     rbenv_user: "{{ forum_user }}"
 #     rbenv_dir: "{{ forum_rbenv_dir }}"
-#     rbenv_ruby_version: "{{ forum_ruby_version }}"
+#     RBENV_RUBY_VERSION: "{{ FORUM_RUBY_VERSION }}"
 #
 # Parameters:
 #
 #   * rbenv_user
 #   * rbenv_dir
-#   * rbenv_ruby_version
+#   * RBENV_RUBY_VERSION
 #
 # cribbed from https://github.com/mmoya/ansible-playbooks/blob/master/rbenv/main.yml
 # with a number of changes.
@@ -34,8 +34,8 @@
   when: rbenv_dir is not defined
 
 - fail:
-    msg: "rbenv_ruby_version required for role"
-  when: rbenv_ruby_version is not defined
+    msg: "RBENV_RUBY_VERSION required for role"
+  when: RBENV_RUBY_VERSION is not defined
 
 - name: create rbenv user {{ rbenv_user }}
   user:
@@ -68,7 +68,7 @@
   git:
     repo: https://github.com/sstephenson/rbenv.git
     dest: "{{ rbenv_dir }}/.rbenv"
-    version: "{{ rbenv_version }}"
+    version: "{{ RBENV_VERSION }}"
     accept_hostkey: yes
   become_user: "{{ rbenv_user }}"
   tags:
@@ -106,7 +106,7 @@
   command: mktemp -d
   register: tempdir
   become_user: "{{ rbenv_user }}"
-  when: rbuild_present is failed or (installable_ruby_vers is defined and rbenv_ruby_version not in installable_ruby_vers)
+  when: rbuild_present is failed or (installable_ruby_vers is defined and RBENV_RUBY_VERSION not in installable_ruby_vers)
   tags:
     - install
     - install:base
@@ -116,7 +116,7 @@
     repo: https://github.com/sstephenson/ruby-build.git
     dest: "{{ tempdir.stdout }}/ruby-build"
     accept_hostkey: yes
-  when: tempdir.stdout is defined and (rbuild_present is failed or (installable_ruby_vers is defined and rbenv_ruby_version not in installable_ruby_vers))
+  when: tempdir.stdout is defined and (rbuild_present is failed or (installable_ruby_vers is defined and RBENV_RUBY_VERSION not in installable_ruby_vers))
   become_user: "{{ rbenv_user }}"
   tags:
     - install
@@ -124,20 +124,20 @@
 
 - name: install ruby-build
   command: ./install.sh chdir={{ tempdir.stdout }}/ruby-build
-  when: tempdir.stdout is defined and (rbuild_present is failed or (installable_ruby_vers is defined and rbenv_ruby_version not in installable_ruby_vers))
+  when: tempdir.stdout is defined and (rbuild_present is failed or (installable_ruby_vers is defined and RBENV_RUBY_VERSION not in installable_ruby_vers))
   tags:
     - install
     - install:base
 
 - name: remove temporary directory
   file: path={{ tempdir.stdout }} state=absent
-  when: tempdir.stdout is defined and (rbuild_present is failed or (installable_ruby_vers is defined and rbenv_ruby_version not in installable_ruby_vers))
+  when: tempdir.stdout is defined and (rbuild_present is failed or (installable_ruby_vers is defined and RBENV_RUBY_VERSION not in installable_ruby_vers))
   tags:
     - install
     - install:base
 
-- name: check ruby {{ rbenv_ruby_version }} installed
-  shell: "rbenv versions | grep {{ rbenv_ruby_version }}"
+- name: check ruby {{ RBENV_RUBY_VERSION }} installed
+  shell: "rbenv versions | grep {{ RBENV_RUBY_VERSION }}"
   register: ruby_installed
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
@@ -146,8 +146,8 @@
     - install
     - install:base
 
-- name: install ruby {{ rbenv_ruby_version }}
-  shell: "rbenv install {{ rbenv_ruby_version }} creates={{ rbenv_dir }}/.rbenv/versions/{{ rbenv_ruby_version }}"
+- name: install ruby {{ RBENV_RUBY_VERSION }}
+  shell: "rbenv install {{ RBENV_RUBY_VERSION }} creates={{ rbenv_dir }}/.rbenv/versions/{{ RBENV_RUBY_VERSION }}"
   when: ruby_installed is failed
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
@@ -155,8 +155,8 @@
     - install
     - install:base
 
-- name: set global ruby {{ rbenv_ruby_version }}
-  shell: "rbenv global {{ rbenv_ruby_version }}"
+- name: set global ruby {{ RBENV_RUBY_VERSION }}
+  shell: "rbenv global {{ RBENV_RUBY_VERSION }}"
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
   tags:
@@ -164,7 +164,7 @@
     - install:base
 
 - name: update rubygems
-  shell: "gem update --system {{ rbenv_rubygems_version }}"
+  shell: "gem update --system {{ RBENV_RUBYGEMS_VERSION }}"
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
   tags:
@@ -172,7 +172,7 @@
     - install:base
 
 - name: install bundler
-  shell: "gem install bundler -v {{ rbenv_bundler_version }}"
+  shell: "gem install bundler -v {{ RBENV_BUNDLER_VERSION }}"
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
   tags:
@@ -180,14 +180,14 @@
     - install:base
 
 - name: remove rbenv version of rake
-  file: path="{{ rbenv_dir }}/.rbenv/versions/{{ rbenv_ruby_version }}/bin/rake" state=absent
+  file: path="{{ rbenv_dir }}/.rbenv/versions/{{ RBENV_RUBY_VERSION }}/bin/rake" state=absent
   when: jenkins_worker is not defined or not jenkins_worker
   tags:
     - install
     - install:base
 
 - name: install rake gem
-  shell: "gem install rake -v {{ rbenv_rake_version }}"
+  shell: "gem install rake -v {{ RBENV_RAKE_VERSION }}"
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
   when: jenkins_worker is not defined or not jenkins_worker

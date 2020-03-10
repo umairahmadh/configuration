@@ -407,7 +407,7 @@ Add any new changes to the top(right below this line).
 
   - Added `EDXAPP_DEFAULT_MOBILE_AVAILABLE` setting (defaults to `false`).
 
-  - Added `EDX_PLATFORM_REVISION` (set from `edx_platform_version`). This is for
+  - Added `EDX_PLATFORM_REVISION` (set from `EDX_PLATFORM_VERSION`). This is for
   edx-platform debugging purposes, and replaces calling dealer.git at startup.
 
 - Role: veda_pipeline_worker

@@ -102,8 +102,8 @@ COMMON_ENABLE_NEWRELIC_INFRASTRUCTURE: False
 COMMON_ENABLE_NEWRELIC_APP: False
 COMMON_ENABLE_MINOS: False
 COMMON_TAG_EC2_INSTANCE: False
-common_boto_version: '2.48.0'
-common_node_version: '12.13.0'
+COMMON_BOTO_VERSION: '2.48.0'
+COMMON_NODE_VERSION: '12.13.0'
 common_redhat_pkgs:
   - ntp
   - lynx
@@ -133,10 +133,10 @@ old_python_debian_pkgs:
   - "python2.7=2.7.10-0+{{ ansible_distribution_release }}1"
 
 
-common_pip_version: '19.3.1'
+COMMON_PIP_VERSION: '19.3.1'
 
 common_pip_pkgs:
-  - pip=={{ common_pip_version }}
+  - pip=={{ COMMON_PIP_VERSION }}
   - setuptools==39.0.1
   - virtualenv==15.2.0
   - virtualenvwrapper==4.8.2

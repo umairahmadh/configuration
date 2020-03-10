@@ -34,7 +34,7 @@ dependencies:
     edx_django_service_nginx_port: '{{ DISCOVERY_NGINX_PORT }}'
     edx_django_service_ssl_nginx_port: '{{ DISCOVERY_SSL_NGINX_PORT }}'
     edx_django_service_memcache: '{{ DISCOVERY_MEMCACHE }}'
-    edx_django_service_node_version: '{{ discovery_node_version }}'
+    edx_django_service_node_version: '{{ DISCOVERY_NODE_VERSION }}'
     edx_django_service_automated_users: '{{ DISCOVERY_AUTOMATED_USERS }}'
     edx_django_service_enable_newrelic_distributed_tracing: '{{ DISCOVERY_ENABLE_NEWRELIC_DISTRIBUTED_TRACING }}'
     edx_django_service_decrypt_config_enabled: '{{ DISCOVERY_DECRYPT_CONFIG_ENABLED }}'
