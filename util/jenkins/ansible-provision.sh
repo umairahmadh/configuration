@@ -180,16 +180,16 @@ if [[ -z $registrar ]]; then
   registrar="false"
 fi
 
-if [[ -z $REGISTRAR_VERSION ]]; then
-  REGISTRAR_VERSION="master"
+if [[ -z $registrar_version ]]; then
+  registrar_version="master"
 fi
 
 if [[ -z $learner_portal ]]; then
   learner_portal="false"
 fi
 
-if [[ -z $LEARNER_PORTAL_VERSION ]]; then
-  LEARNER_PORTAL_VERSION="master"
+if [[ -z $learner_portal_version ]]; then
+  learner_portal_version="master"
 fi
 
 if [[ $registrar == 'true' ]]; then
@@ -207,16 +207,16 @@ cd playbooks
 
 cat << EOF > $extra_vars_file
 EDX_PLATFORM_VERSION: $edxapp_version
-FORUM_VERSION: $FORUM_VERSION
+FORUM_VERSION: $forum_version
 notifier_version: $notifier_version
 XQUEUE_VERSION: $xqueue_version
-CERTS_VERSION: $CERTS_VERSION
-CONFIGURATION_VERSION: $CONFIGURATION_VERSION
-DEMO_VERSION: $DEMO_VERSION
+CERTS_VERSION: $certs_version
+CONFIGURATION_VERSION: $configuration_version
+DEMO_VERSION: $demo_version
 THEMES_VERSION: $themes_version
-REGISTRAR_VERSION: $REGISTRAR_VERSION
-LEARNER_PORTAL_VERSION: $LEARNER_PORTAL_VERSION
-PROGRAM_MANAGER_VERSION: $PROGRAM_MANAGER_VERSION
+REGISTRAR_VERSION: $registrar_version
+LEARNER_PORTAL_VERSION: $learner_portal_version
+PROGRAM_MANAGER_VERSION: $program_manager_version
 
 edx_ansible_source_repo: ${configuration_source_repo}
 edx_platform_repo: ${edx_platform_repo}
@@ -242,18 +242,18 @@ ANALYTICS_API_VERSION: $analytics_api_version
 
 REGISTRAR_NGINX_PORT: 80
 REGISTRAR_SSL_NGINX_PORT: 443
-REGISTRAR_VERSION: $REGISTRAR_VERSION
+REGISTRAR_VERSION: $registrar_version
 REGISTRAR_ENABLED: $registrar
 
 LEARNER_PORTAL_NGINX_PORT: 80
 LEARNER_PORTAL_SSL_NGINX_PORT: 443
-LEARNER_PORTAL_VERSION: $LEARNER_PORTAL_VERSION
+LEARNER_PORTAL_VERSION: $learner_portal_version
 LEARNER_PORTAL_ENABLED: $learner_portal
 LEARNER_PORTAL_SANDBOX_BUILD: True
 
 PROGRAM_MANAGER_NGINX_PORT: 80
 PROGRAM_MANAGER_SSL_NGINX_PORT: 443
-PROGRAM_MANAGER_VERSION: $PROGRAM_MANAGER_VERSION
+PROGRAM_MANAGER_VERSION: $program_manager_version
 PROGRAM_MANAGER_ENABLED: $program_manager
 PROGRAM_MANAGER_SANDBOX_BUILD: True
 
