@@ -8,6 +8,16 @@
     - "install"
     - "install:configuration"
 
+- stat:
+    path: "/usr/local/share/ca-certificates"
+  register: download_digcert_ca_certificate
+
+- name: Download digicert intermediate Certificate
+  get_url:
+    url: "{{ common_digicert_base_url }}/{{ common_digicert_name }}.pem"
+    dest: "/usr/local/share/ca-certificates/{{ common_digicert_name }}"
+  when: download_digcert_ca_certificate is defined and download_digcert_ca_certificate.stat.exists == True
+
 # ubuntu
 - stat:
     path: "/usr/sbin/update-ca-certificates"
