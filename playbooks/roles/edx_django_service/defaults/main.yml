@@ -132,3 +132,5 @@ edx_django_service_migration_check_services: "{{ edx_django_service_name }}"
 EDX_DJANGO_SERVICE_ENABLE_ADMIN_URLS_RESTRICTION: false
 
 EDX_DJANGO_SERVICE_ADMIN_URLS: []
+
+EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM: false

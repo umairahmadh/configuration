@@ -21,11 +21,28 @@
 #
 #
 
+
+# EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
+
+- name: Install docker-compose.yml
+  when: EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
+  become_user: "{{ edx_django_service_user }}"
+  template:
+    src: "edx/app/app/docker-compose.yml.j2"
+    dest: "{{ edx_django_service_home }}/docker-compose.yml"
+
+- name: Docker build
+  when: EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
+  command: docker-compose --build
+  args:
+    chdir: '{{ edx_django_service_home }}'
+
 - name: add gunicorn configuration file
   template:
     src: "edx/app/app/app_gunicorn.py.j2"
     dest: "{{ edx_django_service_home }}/{{ edx_django_service_name }}_gunicorn.py"
   become_user: "{{ edx_django_service_user }}"
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - install
     - install:configuration
@@ -33,7 +50,7 @@
 - name: install python3
   apt:
     name: "{{ item }}"
-  when: edx_django_service_use_python3
+  when: edx_django_service_use_python3 and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   with_items:
     - python3-pip
     - python3-dev
@@ -46,7 +63,7 @@
   args:
     creates: "{{ edx_django_service_venv_dir }}/bin/pip"
   become_user: "{{ edx_django_service_user }}"
-  when: edx_django_service_use_python3
+  when: edx_django_service_use_python3 and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - install
     - install:system-requirements
@@ -56,7 +73,7 @@
   args:
     creates: "{{ edx_django_service_venv_dir }}/bin/pip"
   become_user: "{{ edx_django_service_user }}"
-  when: not edx_django_service_use_python3
+  when: not edx_django_service_use_python3 and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - install
     - install:system-requirements
@@ -64,6 +81,7 @@
 - name: Pin pip to a specific version.
   command: "{{ edx_django_service_venv_dir }}/bin/pip install pip=={{ common_pip_version }}"
   become_user: "{{ edx_django_service_user }}"
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - install
     - install:system-requirements
@@ -73,6 +91,7 @@
 - name: install nodenv
   command: pip install nodeenv
   become_user: "{{ edx_django_service_user }}"
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   environment: "{{ edx_django_service_environment }}"
   tags:
     - install
@@ -83,6 +102,7 @@
   args:
     creates: "{{ edx_django_service_nodeenv_dir }}"
   become_user: "{{ edx_django_service_user }}"
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   environment: "{{ edx_django_service_environment }}"
   tags:
     - install
@@ -91,11 +111,12 @@
 - name: upgrade npm
   command: "npm install -g npm@{{ edx_django_service_npm_version }}"
   become_user: "{{ edx_django_service_user }}"
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   environment: "{{ edx_django_service_environment }}"
   tags:
     - install
     - install:system-requirements
-  when: edx_django_service_npm_version is defined
+  when: edx_django_service_npm_version is defined and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
 
 
 - name: install production requirements
@@ -103,6 +124,7 @@
   args:
     chdir: "{{ edx_django_service_code_dir }}"
   become_user: "{{ edx_django_service_user }}"
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   environment: "{{ edx_django_service_environment }}"
   tags:
     - install
@@ -114,7 +136,7 @@
     chdir: "{{ edx_django_service_code_dir }}"
   become_user: "{{ edx_django_service_user }}"
   environment: "{{ edx_django_service_environment }}"
-  when: edx_django_service_is_devstack is defined and edx_django_service_is_devstack
+  when: edx_django_service_is_devstack is defined and edx_django_service_is_devstack and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - install
     - install:app-requirements
@@ -127,7 +149,7 @@
     chdir: "{{ edx_django_service_code_dir }}"
   become_user: "{{ edx_django_service_user }}"
   environment: "{{ edx_django_service_migration_environment }}"
-  when: migrate_db is defined and migrate_db|lower == "yes"
+  when: migrate_db is defined and migrate_db|lower == "yes" and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   run_once: yes
   tags:
     - migrate
@@ -140,7 +162,7 @@
   become_user: "{{ edx_django_service_user }}"
   environment: "{{ edx_django_service_environment }}"
   with_items: '{{ edx_django_service_post_migrate_commands }}'
-  when: migrate_db is defined and migrate_db|lower == "yes" and item.when|bool
+  when: migrate_db is defined and migrate_db|lower == "yes" and item.when|bool and not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   run_once: yes
   tags:
     - migrate
@@ -187,7 +209,7 @@
     owner: "{{ supervisor_user }}"
     group: "{{ common_web_user }}"
     mode: 0744
-  when: edx_django_service_is_devstack is defined and edx_django_service_is_devstack
+  when: edx_django_service_is_devstack is defined and edx_django_service_is_devstack not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - devstack
     - devstack:install
@@ -199,6 +221,7 @@
     owner: "{{ edx_django_service_user }}"
     group: "{{ edx_django_service_user }}"
     mode: 0644
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   tags:
     - install
     - install:configuration
@@ -226,6 +249,7 @@
     src: "{{ edx_django_service_venv_dir }}/bin/{{ item }}"
     dest: "{{ COMMON_BIN_DIR }}/{{ item.split('.')[0] }}.{{ edx_django_service_name }}"
     state: link
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   with_items:
     - python
     - pip
@@ -239,12 +263,14 @@
     src: "{{ edx_django_service_code_dir }}/{{ item }}"
     dest: "{{ COMMON_BIN_DIR }}/{{ item.split('.')[0] }}.{{ edx_django_service_name }}"
     state: link
+  when: not EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM
   with_items:
     - manage.py
   tags:
     - install
     - install:app-requirements
 
+# TODO: How to handle this in docker build?
 - name: compile static assets
   command: make static
   args:
@@ -294,6 +320,7 @@
     - install
     - install:vhosts
 
+#TODO jdmulloy docker build
 - name: Include JWT signature setting in the app config file
   include_role:
     name: jwt_signature

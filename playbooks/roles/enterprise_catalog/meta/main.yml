@@ -12,6 +12,7 @@
 
 dependencies:
   - role: edx_django_service
+    EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM: true
     edx_django_service_version: '{{ ENTERPRISE_CATALOG_VERSION }}'
     edx_django_service_name: '{{ enterprise_catalog_service_name }}'
     edx_django_service_debian_pkgs_extra: '{{ enterprise_catalog_debian_pkgs }}'

@@ -1,6 +1,10 @@
 ---
 dependencies:
   - common
+  - role: docker-tools
+    docker_users:
+      - '{{ edx_django_service_automated_users }}'
+      - "{{ edx_django_service_user }}"
   - role: supervisor
     supervisor_spec:
       - service: "{{ edx_django_service_name }}"

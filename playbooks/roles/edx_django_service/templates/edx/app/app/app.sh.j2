@@ -2,6 +2,10 @@
 
 # {{ ansible_managed }}
 
+{% if EDX_DJANGO_SERVICE_ENABLE_DOCKER_SHIM %}
+cd ..
+docker-compose up
+{% else %}
 {% set edx_django_service_venv_bin = edx_django_service_venv_dir + "/bin" %}
 
 {% if COMMON_ENABLE_NEWRELIC_APP %}
@@ -25,3 +29,4 @@ export EDX_REST_API_CLIENT_NAME="{{ COMMON_ENVIRONMENT }}-{{ COMMON_DEPLOYMENT }
 
 source {{ edx_django_service_home }}/{{ edx_django_service_name }}_env
 exec {{ executable }} -c {{ edx_django_service_home }}/{{ edx_django_service_name }}_gunicorn.py {{ edx_django_service_gunicorn_extra }} {{ edx_django_service_wsgi_name }}.wsgi:application
+{% endif %}
